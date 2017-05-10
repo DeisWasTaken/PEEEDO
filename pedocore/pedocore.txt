@@ -1,0 +1,15 @@
+"pedocore"
+{
+	"base"		"base"
+    "title"  "pedocore"
+    "version"   "0.1"
+    "menusystem"	"1"
+
+    "author_name"   "Habobababo & Deis"
+    "author_email"  "deis@core-community.de"
+    "author_url"    "https://github.com/habobababo"
+
+    "icon"  ""
+    "info"  ""
+    "hide"  "0"
+}
