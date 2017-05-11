@@ -1,26 +1,9 @@
 
-
-util.AddNetworkString( "PEDO_SendRoundStart" )
-util.AddNetworkString( "PEDO_SendRoundWinner" )
-
-
 ROUNDS = 0
 
-
 local function PEDO_PostRound(winner) -- 1 = VIC, 2 = PEDO
-  if winner == "2" then
-    net.Start( "PEDO_SendRoundWinner" )
-      net.WriteInt(2)
-    net.Broadcast()
-  elseif winner == "1" then
-    net.Start( "PEDO_SendRoundWinner" )
-      net.WriteInt(1)
-    net.Broadcast()
-  else
-    net.Start( "PEDO_SendRoundWinner" )
-      net.WriteInt(3)
-    net.Broadcast()
-  end
+  hook.Call("PEDO_RoundEnd", GAMEMODE, winner)
+  BroadcastLua( "hook.Call( [[PEDO_RoundEnd]], nil, " .. winner .. " )" )
   timer.Simple(6, function() PEDO_PreRoundStart() end)
 end
 
@@ -32,16 +15,21 @@ end
 
 local function PEDO_RoundStart()
   PEDO_RoundCount()
-  net.Start( "PEDO_SendRoundStart" )
-  net.Broadcast()
+  hook.Call("PEDO_RoundStart")
+  BroadcastLua( [[hook.Call( "PEDO_RoundStart" )]] )
+
 end
 
 local function PEDO_PreRoundStart()
   ROUNDTIME = PEDO.RoundTime
+  for k,v in pairs(player.GetAll()) do
+    v:StripWeapons()
+  end
   timer.Simple(5, function()
     PEDO_RoundStart()
-    print("lets go")
   end)
+  hook.Call("PEDO_PreRoundStart")
+  BroadcastLua( [[hook.Call( "PEDO_PreRoundStart" )]] )
 end
 concommand.Add("shit",function() PEDO_PreRoundStart() end)
 

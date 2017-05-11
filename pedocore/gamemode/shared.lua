@@ -6,9 +6,8 @@ GM.Website = "N/A"
 PEDO = {}
 
 PEDO.RoundTime = 300
-
 PEDO.PrepareTime = 30
-
+PEDO.CatchRadius = 40
 
 PEDO.VIC = {}
 PEDO.VIC.Color = Color(255,0,0,255)
@@ -19,11 +18,11 @@ PEDO.VIC.Models = { // Just take 4 Models or Break the Gamemode
 	["URBAN"] = "models/player/urban.mdl",
 	["SWAT"] = "models/player/swat.mdl"
 }
+
 PEDO.VIC.WinTexts = {
   "Die Kinder waren zu schnell!",
   "Die Eltern haben die Kinder gerettet!"
 }
-
 
 PEDO.PEDO = {}
 PEDO.PEDO.Color = Color(0,255,0,255)
@@ -39,15 +38,14 @@ PEDO.PEDO.WinTexts = {
   "Der Pedobär hat es genossen!",
   "Der Pedobär will mehr!",
   "Leider ist kein Kind mehr übrig.."
-  }
-
+}
 
 PEDO.SPEC = {}
 PEDO.SPEC.Name = "Zuschauer"
 PEDO.SPEC.Color = Color(0,70,70,255)
 
 function GM:Initialize()
-	hook.Call("Pedo_Initialize")
+	hook.Call("PEDO_Initialize")
 end
 
 function GM:CreateTeams()

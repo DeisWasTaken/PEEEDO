@@ -1,14 +1,16 @@
 
 local ROUNDTIME = PEDO.RoundTime
+local PRETIME = PEDO.PrepareTime
 local Winner = ""
-net.Receive( "PEDO_SendRoundStart", function( len, ply )
+
+local function PEDO_StartRoundTimer()
   timer.Create("PEDO_RoundCountCL", 1, 0, function()
     ROUNDTIME = ROUNDTIME - 1
   end)
-end )
+end
+hook.Add("PEDO_RoundStart", "PEDO_StartRoundTimer", PEDO_StartRoundTimer)
 
-net.Receive( "PEDO_SendRoundWinner", function( len, ply ) -- 1 = VIC, 2 = PEDO
-  local WinInt = net.ReadInt()
+local function PEDO_EndRoundEvents(WinInt)
   if !IsValid(WinInt) then return end
   if WinInt == 1 then
     Winner = table.Random(PEDO.VIC.WinTexts)
@@ -20,9 +22,9 @@ net.Receive( "PEDO_SendRoundWinner", function( len, ply ) -- 1 = VIC, 2 = PEDO
   timer.Simple(5, function()
     Winner = ""
     ROUNDTIME = -1
-
   end) -- Winner auf empty überschreiben
-end )
+end
+hook.Add("PEDO_RoundEnd", "PEDO_EndRoundEvents", PEDO_EndRoundEvents)
 
 local function PEDO_PlayerHUD()
   if ROUNDTIME > 0 then

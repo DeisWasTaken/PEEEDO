@@ -7,18 +7,30 @@ function meta:Loadout()
 end
 
 function meta:IsPedo()
-  return self:GetNWBool("PEDO")
+  if self:Team() == TEAM_PEDO then return true end
 end
 
 function meta:GivePedo()
-  self:SetNWBool("PEDO", true)
+  self:SetTeam(TEAM_PEDO)
 end
 
 function meta:RemovePedo()
-  self:SetNWBool("PEDO", false)
+  self:SetTeam(TEAM_VICTIM)
 end
+
 local function PEDO_SetTeamOnSpawn(ply)
   ply:SetTeam(TEAM_SPEC)
 
 end
 hook.Add("PlayerInitialSpawn", "PEDO_SetTeamOnSpawn", PEDO_SetTeamOnSpawn)
+
+local function PEDO_NearVictims()
+  for k,v in pairs(team.GetPlayers(TEAM_PEDO)) do
+    for _,ply in pairs(ents.FindInSphere(v:GetPos(),PEDO.CatchRadius)) do
+      if ply:IsPlayer() then
+        ply:Kill()
+      end
+    end
+  end
+end
+hook.Add("Think", "PEDO_NearVictims", PEDO_NearVictims)
