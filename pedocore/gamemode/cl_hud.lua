@@ -11,7 +11,7 @@ end
 hook.Add("PEDO_RoundStart", "PEDO_StartRoundTimer", PEDO_StartRoundTimer)
 
 local function PEDO_EndRoundEvents(WinInt)
-  if !IsValid(WinInt) then return end
+  print(WinInt)
   if WinInt == 1 then
     Winner = table.Random(PEDO.VIC.WinTexts)
   elseif WinInt == 2 then

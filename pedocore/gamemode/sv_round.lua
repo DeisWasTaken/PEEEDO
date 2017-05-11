@@ -1,12 +1,6 @@
 
 ROUNDS = 0
 
-local function PEDO_PostRound(winner) -- 1 = VIC, 2 = PEDO
-  hook.Call("PEDO_RoundEnd", GAMEMODE, winner)
-  BroadcastLua( "hook.Call( [[PEDO_RoundEnd]], nil, " .. winner .. " )" )
-  timer.Simple(6, function() PEDO_PreRoundStart() end)
-end
-
 local function PEDO_RoundCount()
   timer.Create("PEDO_RoundCount", PEDO.RoundTime, 1 ,function()
       PEDO_PostRound(1)
@@ -31,10 +25,16 @@ local function PEDO_PreRoundStart()
   hook.Call("PEDO_PreRoundStart")
   BroadcastLua( [[hook.Call( "PEDO_PreRoundStart" )]] )
 end
-concommand.Add("shit",function() PEDO_PreRoundStart() end)
+concommand.Add("shit", PEDO_PreRoundStart)
+
+local function PEDO_PostRound(winner) -- 1 = VIC, 2 = PEDO
+  hook.Call("PEDO_RoundEnd", GAMEMODE, winner)
+  BroadcastLua( "hook.Call( [[PEDO_RoundEnd]], nil, " .. winner .. " )" )
+  timer.Simple(6, function() PEDO_PreRoundStart() end)
+end
 
 local function PEDO_StopRound()
-  if timer.Exists( "PEDO_RoundCount" )
+  if timer.Exists( "PEDO_RoundCount" ) then
     timer.Destroy("PEDO_RoundCount")
   end
 
@@ -44,7 +44,7 @@ local function PEDO_PrepareTime()
 
 end
 
-local function PEDO_DeathThink()
+local function PEDO_DeathThink(ply)
 
   local VIC_ALIVE = 0
 
