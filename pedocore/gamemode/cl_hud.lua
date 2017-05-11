@@ -3,6 +3,15 @@ local ROUNDTIME = PEDO.RoundTime
 local PRETIME = PEDO.PrepareTime
 local Winner = ""
 
+
+
+
+surface.CreateFont( "PEDOFont120", {
+	font = "Candy Shop", -- Use the font-name which is shown to you by your operating system Font Viewer, not the file name
+	size = 120,
+	weight = 5000,
+} )
+
 local function PEDO_StartRoundTimer()
   timer.Create("PEDO_RoundCountCL", 1, 0, function()
     ROUNDTIME = ROUNDTIME - 1
@@ -30,14 +39,16 @@ local function PEDO_PlayerHUD()
   if ROUNDTIME > 0 then
     draw.SimpleText(ROUNDTIME, "DermaDefault", 0, 0, Color( 255, 255, 255, 255 ))
   end
+  --draw.SimpleText("test#", "PEDOFont120", 0, 0, Color( 255, 255, 255, 255 ))
 end
 
 local function PEDO_EventHUD()
-  draw.SimpleText(Winner, "DermaDefault", ScrW() / 2, 120, Color( 255, 255, 255, 255 ), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+  draw.SimpleTextOutlined(Winner, "PEDOFont120", ScrW() / 2, 120, Color( 255, 255, 255, 255 ), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER, 1,Color(0,0,0,25))
 end
 
 local function PEDO_DrawHUD()
   PEDO_EventHUD()
+  PEDO_PlayerHUD()
   if Winner != "" then
     PEDO_EventHUD()
   end

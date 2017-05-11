@@ -1,5 +1,7 @@
 
 ROUNDS = 0
+ROUNDTIME = PEDO.RoundTime
+local PEDO_PostRoundCalled = false
 
 local function PEDO_RoundCount()
   timer.Create("PEDO_RoundCount", PEDO.RoundTime, 1 ,function()
@@ -11,12 +13,12 @@ local function PEDO_RoundStart()
   PEDO_RoundCount()
   hook.Call("PEDO_RoundStart")
   BroadcastLua( [[hook.Call( "PEDO_RoundStart" )]] )
-
 end
 
 local function PEDO_PreRoundStart()
   ROUNDTIME = PEDO.RoundTime
   for k,v in pairs(player.GetAll()) do
+    v:Spawn()
     v:StripWeapons()
   end
   timer.Simple(5, function()
@@ -24,16 +26,20 @@ local function PEDO_PreRoundStart()
   end)
   hook.Call("PEDO_PreRoundStart")
   BroadcastLua( [[hook.Call( "PEDO_PreRoundStart" )]] )
+  PEDO_PostRoundCalled = false
 end
 concommand.Add("shit", PEDO_PreRoundStart)
 
 local function PEDO_PostRound(winner) -- 1 = VIC, 2 = PEDO
+  if PEDO_PostRoundCalled then return end
+  PEDO_PostRoundCalled = true
   hook.Call("PEDO_RoundEnd", GAMEMODE, winner)
   BroadcastLua( "hook.Call( [[PEDO_RoundEnd]], nil, " .. winner .. " )" )
   timer.Simple(6, function() PEDO_PreRoundStart() end)
 end
 
 local function PEDO_StopRound()
+  if PEDO_PostRoundCalled then return end
   if timer.Exists( "PEDO_RoundCount" ) then
     timer.Destroy("PEDO_RoundCount")
   end
