@@ -1,11 +1,32 @@
 
-ROUNDTIME = PEDO.RoundTime
 
 util.AddNetworkString( "PEDO_SendRoundStart" )
+util.AddNetworkString( "PEDO_SendRoundWinner" )
+
+
+ROUNDS = 0
+
+
+local function PEDO_PostRound(winner) -- 1 = VIC, 2 = PEDO
+  if winner == "2" then
+    net.Start( "PEDO_SendRoundWinner" )
+      net.WriteInt(2)
+    net.Broadcast()
+  elseif winner == "1" then
+    net.Start( "PEDO_SendRoundWinner" )
+      net.WriteInt(1)
+    net.Broadcast()
+  else
+    net.Start( "PEDO_SendRoundWinner" )
+      net.WriteInt(3)
+    net.Broadcast()
+  end
+  timer.Simple(6, function() PEDO_PreRoundStart() end)
+end
 
 local function PEDO_RoundCount()
-  timer.Create("PEDO_RoundCount", 1, 0 ,function()
-    ROUNDTIME  = ROUNDTIME - 1
+  timer.Create("PEDO_RoundCount", PEDO.RoundTime, 1 ,function()
+      PEDO_PostRound(1)
   end)
 end
 
@@ -24,23 +45,15 @@ local function PEDO_PreRoundStart()
 end
 concommand.Add("shit",function() PEDO_PreRoundStart() end)
 
-
 local function PEDO_StopRound()
-  timer.Destroy("ROUNDTIME")
-  ROUNDTIME = -1
-end
+  if timer.Exists( "PEDO_RoundCount" )
+    timer.Destroy("PEDO_RoundCount")
+  end
 
+end
 
 local function PEDO_PrepareTime()
 
-end
-
-local function PEDO_PostRound(winner) -- 1 = VIC, 2 = PEDO
-  if winner == "2" then
-
-  elseif winner == "1" then
-
-  end
 end
 
 local function PEDO_DeathThink()

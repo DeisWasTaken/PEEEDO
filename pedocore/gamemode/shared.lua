@@ -19,7 +19,10 @@ PEDO.VIC.Models = { // Just take 4 Models or Break the Gamemode
 	["URBAN"] = "models/player/urban.mdl",
 	["SWAT"] = "models/player/swat.mdl"
 }
-
+PEDO.VIC.WinTexts = {
+  "Die Kinder waren zu schnell!",
+  "Die Eltern haben die Kinder gerettet!"
+}
 
 
 PEDO.PEDO = {}
@@ -32,6 +35,11 @@ PEDO.PEDO.Models = { // Just take 4 Models or Break the Gamemode
 	["LEET"] = "models/player/leet.mdl"
 }
 
+PEDO.PEDO.WinTexts = {
+  "Der Pedobär hat es genossen!",
+  "Der Pedobär will mehr!",
+  "Leider ist kein Kind mehr übrig.."
+  }
 
 
 PEDO.SPEC = {}
