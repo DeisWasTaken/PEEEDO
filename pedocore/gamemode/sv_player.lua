@@ -2,9 +2,6 @@
 
 
 local meta = FindMetaTable("Player")
-function meta:Loadout()
-
-end
 
 function meta:IsPedo()
   if self:Team() == TEAM_PEDO then return true end
@@ -16,6 +13,14 @@ end
 
 function meta:RemovePedo()
   self:SetTeam(TEAM_VICTIM)
+end
+
+function meta:Loadout()
+  if self:IsPedo() do
+    self:SetWalkSpeed(PEDO.PedoWalkSpeed)
+  else
+    self:SetWalkSpeed(PEDO.VicWalkSpeed)
+  end
 end
 
 local function PEDO_SetTeamOnSpawn(ply)

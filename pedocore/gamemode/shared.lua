@@ -7,7 +7,12 @@ PEDO = {}
 
 PEDO.RoundTime = 300
 PEDO.PrepareTime = 30
+
 PEDO.CatchRadius = 40
+
+PEDO.PedoWalkSpeed = 280
+PEDO.VicWalkSpeed = 260
+Pedo.RunSpeed = 300
 
 PEDO.VIC = {}
 PEDO.VIC.Color = Color(255,0,0,255)
