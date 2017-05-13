@@ -30,12 +30,16 @@ local function PEDO_RoundStart()
   end)
 end
 
+local function PEDO_InitPedos(ply)
+  ply:SetTeam(TEAM_PEDO)
+end
+
 local function PEDO_SetRandomPedo()
   local plyrz = #team.GetPlayers(TEAM_VICTIM)
   plyrz = math.floor(plyrz / PEDO.PedoSpawnRate)
 
   for i=1,plyrz do
-   table.Random(team.GetPlayers(TEAM_VICTIM):SetTeam(TEAM_PEDO))
+    PEDO_InitPedos(table.Random(team.GetPlayers(TEAM_VICTIM)))
   end
 end
 
@@ -46,6 +50,7 @@ local function PEDO_PreRoundStart()
     v:StripWeapons()
   end
   PEDO_SetRandomPedo()
+
   timer.Simple(PEDO.PreRoundTime, function()
     PEDO_RoundStart()
   end)
