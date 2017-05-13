@@ -6,13 +6,23 @@ GM.Website = "N/A"
 PEDO = {}
 
 PEDO.RoundTime = 300
+PEDO.PreRoundTime = 5
 PEDO.PrepareTime = 30
+
+PEDO.SpawnTime = 15
 
 PEDO.CatchRadius = 40
 
-PEDO.PedoWalkSpeed = 280
-PEDO.VicWalkSpeed = 260
+PEDO.PedoWalkSpeed = 250
+PEDO.VicWalkSpeed = 220
 PEDO.RunSpeed = 300
+
+PEDO.PedoSpawnRate = 6
+
+PEDO.StaminaDrain = 0.01 -- je höher desto langsamer der drain
+PEDO.StaminaRestoreTime = 0.1
+PEDO.DelayRestoreStamina = 4
+PEDO.StaminaDeadPoint = 10 -- weniger als 10 punkte dann geht nix mehr
 
 PEDO.VIC = {}
 PEDO.VIC.Color = Color(255,0,0,255)

@@ -1,6 +1,7 @@
 
 ROUNDS = 0
 ROUNDTIME = PEDO.RoundTime
+IN_PREP = false
 local PEDO_PostRoundCalled = false
 
 local function PEDO_RoundCount()
@@ -10,18 +11,42 @@ local function PEDO_RoundCount()
 end
 
 local function PEDO_RoundStart()
-  PEDO_RoundCount()
+  if !IN_PREP then
+    PEDO_RoundCount()
+  end
   hook.Call("PEDO_RoundStart")
   BroadcastLua( [[hook.Call( "PEDO_RoundStart" )]] )
+
+  for k,v in pairs(team.GetPlayers(TEAM_VICTIM)) do
+    v:Loadout()
+    v:Spawn()
+  end
+
+  timer.Simple(PEDO.SpawnTime, function()
+    for k,v in pairs(team.GetPlayers(TEAM_PEDO)) do
+      v:Loadout()
+      v:Spawn()
+    end
+  end)
+end
+
+local function PEDO_SetRandomPedo()
+  local plyrz = #team.GetPlayers(TEAM_VICTIM)
+  plyrz = math.floor(plyrz / PEDO.PedoSpawnRate)
+
+  for i=1,plyrz do
+   table.Random(team.GetPlayers(TEAM_VICTIM):SetTeam(TEAM_PEDO))
+  end
 end
 
 local function PEDO_PreRoundStart()
   ROUNDTIME = PEDO.RoundTime
   for k,v in pairs(player.GetAll()) do
-    v:Spawn()
+    v:SetTeam(TEAM_VICTIM)
     v:StripWeapons()
   end
-  timer.Simple(5, function()
+  PEDO_SetRandomPedo()
+  timer.Simple(PEDO.PreRoundTime, function()
     PEDO_RoundStart()
   end)
   hook.Call("PEDO_PreRoundStart")
@@ -35,20 +60,20 @@ local function PEDO_PostRound(winner) -- 1 = VIC, 2 = PEDO
   PEDO_PostRoundCalled = true
   hook.Call("PEDO_RoundEnd", GAMEMODE, winner)
   BroadcastLua( "hook.Call( [[PEDO_RoundEnd]], nil, " .. winner .. " )" )
-  timer.Simple(6, function() PEDO_PreRoundStart() end)
-end
-
-local function PEDO_StopRound()
-  if PEDO_PostRoundCalled then return end
-  if timer.Exists( "PEDO_RoundCount" ) then
+  timer.Simple(6, function()
+    PEDO_PreRoundStart()
     timer.Destroy("PEDO_RoundCount")
-  end
-
+  end)
 end
 
 local function PEDO_PrepareTime()
-
+  IN_PREP = true
+  PEDO_RoundStart()
+  timer.Simple(PEDO.PrepareTime, function()
+    PEDO_PostRound("3")
+  end)
 end
+hook.Add("PEDO_Initialize", "PEDO_PrepareTime", PEDO_PrepareTime )
 
 local function PEDO_DeathThink(ply)
 
@@ -63,16 +88,14 @@ local function PEDO_DeathThink(ply)
 
     if VIC_ALIVE == 0 then
       PEDO_PostRound("2") -- PEDO WIN
-      PEDO_StopRound()
     end
 
     if ROUNDTIME >= 0 then
       PEDO_PostRound("1")
-      PEDO_StopRound()
     end
   end)
 
   if ply:Team() == TEAM_SPEC then return false end
-
+  return false
 end
 hook.Add("PlayerDeathThink", "PEDO_DeathThink", PEDO_DeathThink )
