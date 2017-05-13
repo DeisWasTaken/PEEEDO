@@ -10,3 +10,4 @@ include( "sv_round.lua" )
 include( "sh_player.lua" )
 
 resource.AddFile("resources/fonts/Candy_Pop.ttf")
+resource.AddWorkshop("111603898") -- Pedo Bear Playermodel

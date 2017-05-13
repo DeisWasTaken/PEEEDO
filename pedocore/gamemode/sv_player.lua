@@ -71,6 +71,9 @@ hook.Add( "KeyRelease", "PEDO_RevokeDrain", PEDO_RevokeDrain )
 local function PEDO_NearVictims()
   local damageinfo = DamageInfo()  //Victim can't hold the pressure and commits suicide.
   for k,v in pairs(team.GetPlayers(TEAM_PEDO)) do
+      if v:IsPlayer() then
+        v:SetModel("models/player/pbear/pbear.mdl")
+      end
     for _,ply in pairs(ents.FindInSphere(v:GetPos(),PEDO.CatchRadius)) do
       if ply:IsPlayer() then
         if !ply:IsPedo() then

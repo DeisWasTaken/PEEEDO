@@ -112,7 +112,8 @@ local function PEDO_PlayerHUD()
 	draw.SimpleText(nick, "PEDOFont30", 190, ScrH() - h + 45, Color( 255, 255, 255, 255 ))
 
 	--debug
-	draw.SimpleText(stamina, "PEDOFont30", 500, ScrH() - h + 45, Color( 255, 255, 255, 255 ))
+	--draw.SimpleText(stamina, "PEDOFont30", 450, ScrH() - h + 45, Color( 255, 255, 255, 255 ))
+	draw.SimpleText(tostring(lp:Team()), "PEDOFont30", 500, ScrH() - h + 45, Color( 255, 255, 255, 255 ))
 	draw.SimpleText(lp:GetRunSpeed(), "PEDOFont30", 300, ScrH() - h + 45, Color( 255, 255, 255, 255 ))
 end
 
@@ -140,10 +141,10 @@ hook.Add("HUDPaint", "PEDO_DrawHUD", PEDO_DrawHUD)
 
 local function PEDO_RoundStartScreen()
 	PedoScreen = true
+	LocalPlayer():ChatPrint(tostring(PedoScreen))
 	timer.Simple(PEDO.SpawnTime, function()
 		PedoScreen = false
 	end)
-
 end
 hook.Add("PEDO_RoundStart", "PEDO_RoundStartScreen", PEDO_RoundStartScreen )
 
