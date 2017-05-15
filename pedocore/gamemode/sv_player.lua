@@ -1,6 +1,8 @@
 
-local meta = FindMetaTable("Player")
+util.AddNetworkString( "PEDO_SendDeadPlayer" )
+util.AddNetworkString( "PEDO_PlayerDied" )
 
+local meta = FindMetaTable("Player")
 function meta:GivePedo()
   self:SetTeam(TEAM_PEDO)
 end
@@ -14,6 +16,7 @@ function meta:Loadout()
     self:SetWalkSpeed(PEDO.PedoWalkSpeed)
   else
     self:SetWalkSpeed(PEDO.VicWalkSpeed)
+    self:SetModel("models/player/riot.mdl")
   end
 end
 
@@ -103,3 +106,15 @@ local function PEDO_NearVictims()
   end
 end
 hook.Add("Think", "PEDO_NearVictims", PEDO_NearVictims)
+
+local function PEDO_SendPlayerDeath(victim, inflictor, attacker)
+  if IsValid(victim) then
+    net.Start( "PEDO_SendDeadPlayer" )
+      net.WriteEntity(victim)
+    net.Broadcast()
+
+    net.Start( "PEDO_PlayerDied" )
+    net.Broadcast()
+  end
+end
+hook.Add("PlayerDeath", "PEDO_SendPlayerDeath", PEDO_SendPlayerDeath)

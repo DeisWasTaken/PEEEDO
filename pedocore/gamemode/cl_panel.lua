@@ -3,7 +3,6 @@
 local blur = Material("pp/blurscreen")
 function PEDO_DrawBlur(panel)
 	local x, y = panel:LocalToScreen(0, 0)
-
 	surface.SetDrawColor(255, 255, 255, 200)
 	surface.SetMaterial(blur)
 

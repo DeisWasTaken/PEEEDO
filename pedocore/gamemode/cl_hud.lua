@@ -3,6 +3,10 @@ local ROUNDTIME = PEDO.RoundTime
 local PRETIME = PEDO.PrepareTime
 local Winner = ""
 local PedoScreen = false
+local PEDO_WantedPersons = 0
+
+local Avatar = {}
+local DPanel = {}
 
 surface.CreateFont( "PEDOFont120", {
 	font = "Candy Shop", -- Use the font-name which is shown to you by your operating system Font Viewer, not the file name
@@ -41,6 +45,7 @@ surface.CreateFont( "WantedSmall720", {
 } )
 
 local function PEDO_StartRoundTimer()
+	ROUNDTIME = PEDO.RoundTime
   timer.Create("PEDO_RoundCountCL", 1, 0, function()
     ROUNDTIME = ROUNDTIME - 1
   end)
@@ -48,7 +53,6 @@ end
 hook.Add("PEDO_RoundStart", "PEDO_StartRoundTimer", PEDO_StartRoundTimer)
 
 local function PEDO_EndRoundEvents(WinInt)
-  print(WinInt)
   if WinInt == 1 then
     Winner = table.Random(PEDO.VIC.WinTexts)
   elseif WinInt == 2 then
@@ -60,6 +64,14 @@ local function PEDO_EndRoundEvents(WinInt)
     Winner = ""
     ROUNDTIME = -1
   end) -- Winner auf empty überschreiben
+	PEDO_WantedPersons = 0
+
+	for k,v in pairs(DPanel) do
+		v:Remove()
+	end
+	for k,v in pairs(Avatar) do
+		v:Remove()
+	end
 end
 hook.Add("PEDO_RoundEnd", "PEDO_EndRoundEvents", PEDO_EndRoundEvents)
 
@@ -78,7 +90,6 @@ local function drawBlur( x, y, w, h )
 		render.SetScissorRect( 0, 0, 0, 0, false )
 	end
 end
-
 
 local w, h = 300, 150
 --hook.Add("Think", "DrawPlayerModel", function()
@@ -122,38 +133,48 @@ local function PEDO_DrawBlur(panel)
 	end
 end
 
-local Avatar = {}
+
 local function PEDO_DrawAvatars(id, ply)
-	Avatar[id] = vgui.Create( "AvatarImage", Panel )
+	if id == 3 then id = 4 end
+	Avatar[id] = vgui.Create( "AvatarImage" )
 	Avatar[id]:SetSize( ScrW() * 0.03, ScrH() * 0.05 )
 	Avatar[id]:SetPos( ScrW() * 0.095 + id * ScrW() * 0.13, ScrH() * 0.04 )
-	Avatar[id]:SetPlayer( LocalPlayer(), 64 )
+	Avatar[id]:SetPlayer( ply, 64 )
 end
 
 local function PEDO_RemoveAvatars(id)
+	if id == 3 then id = 4 end
 	if Avatar[id] then Avatar[id]:Remove() end
+	PEDO_RemoveAvatars(id)
 end
 
-local DPanel = {}
-local function PEDO_MostWanted(id)
-
+local function PEDO_MostWanted(id, ply)
+	if id == 3 then id = 4 end
+	if !IsValid(ply) then return end
+	local nick = ply:Nick()
+	if string.len(nick) >= 7 then
+		nick = string.Left(nick, 7).."..."
+	end
 	DPanel[id] = vgui.Create( "DPanel" )
 	DPanel[id]:SetPos( ScrW() * 0.06 + id * ScrW() * 0.13, 0 ) -- Set the position of the panel
 	DPanel[id]:SetSize( ScrW() * 0.1, ScrH() * 0.12 ) -- Set the size of the panel
 	DPanel[id].Paint = function(self)
-		PEDO_DrawBlur(self)
+		--drawBlur(0,0,self:GetWide(), self:GetTall())
+		--PEDO_DrawBlur(self)
 		draw.RoundedBox(0, 0, 0, ScrW() * 0.1, ScrH() * 0.12, Color(0,0,0,80))
 		if ScrH() > 720 then
 			draw.SimpleTextOutlined("Wanted", "Wanted1080", self:GetWide() / 2, 22, Color( 255, 255, 255, 255 ), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER,1,Color(0,0,0, 100))
-			draw.SimpleTextOutlined("testnick", "WantedSmall1080", self:GetWide() / 2, self:GetTall() * 0.88, Color( 255, 255, 255, 255 ), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER,1,Color(0,0,0, 100))
+			draw.SimpleTextOutlined(nick, "WantedSmall1080", self:GetWide() / 2, self:GetTall() * 0.88, Color( 255, 255, 255, 255 ), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER,1,Color(0,0,0, 100))
 		else
 			draw.SimpleTextOutlined("Wanted", "Wanted720", self:GetWide() / 2, 15, Color( 255, 255, 255, 255 ), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER,1,Color(0,0,0, 100))
-			draw.SimpleTextOutlined("Habobab...", "WantedSmall720", self:GetWide() / 2, self:GetTall() * 0.88, Color( 255, 255, 255, 255 ), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER,1,Color(0,0,0, 100))
+			draw.SimpleTextOutlined(nick, "WantedSmall720", self:GetWide() / 2, self:GetTall() * 0.88, Color( 255, 255, 255, 255 ), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER,1,Color(0,0,0, 100))
 		end
 	end
+	PEDO_DrawAvatars(id, ply)
 end
 
 local function PEDO_RemoveMostWanted(id)
+	if id == 3 then id = 4 end
 	if DPanel[id] then DPanel[id]:Remove() end
 end
 
@@ -164,30 +185,34 @@ concommand.Add("DeleteAvatars", function(ply) --debug
 	PEDO_RemoveMostWanted(4)
 	PEDO_RemoveMostWanted(5)
 	PEDO_RemoveMostWanted(6)
-
-	PEDO_RemoveAvatars(0)
-	PEDO_RemoveAvatars(1)
-	PEDO_RemoveAvatars(2)
-	PEDO_RemoveAvatars(4)
-	PEDO_RemoveAvatars(5)
-	PEDO_RemoveAvatars(6)
 end)
 
 concommand.Add("Avatars", function(ply) --debug
-	PEDO_MostWanted(0)
-	PEDO_MostWanted(1)
-	PEDO_MostWanted(2)
-	PEDO_MostWanted(4)
-	PEDO_MostWanted(5)
-	PEDO_MostWanted(6)
-
-	PEDO_DrawAvatars(0, ply)
-	PEDO_DrawAvatars(1, ply)
-	PEDO_DrawAvatars(2, ply)
-	PEDO_DrawAvatars(4, ply)
-	PEDO_DrawAvatars(5, ply)
-	PEDO_DrawAvatars(6, ply)
+	PEDO_MostWanted(0, ply)
+	PEDO_MostWanted(1, ply)
+	PEDO_MostWanted(2, ply)
+	PEDO_MostWanted(4, ply)
+	PEDO_MostWanted(5, ply)
+	PEDO_MostWanted(6, ply)
 end)
+
+
+local function PEDO_DrawWanted(len, ply)
+	for k,v in pairs(team.GetPlayers(TEAM_VICTIM)) do
+		if v:Alive() then
+			PEDO_WantedPersons = PEDO_WantedPersons + 1
+		end
+	end
+
+	for k,v in pairs(team.GetPlayers(TEAM_VICTIM)) do
+		if PEDO_WantedPersons <= 6 then
+			if v:Alive() then
+				PEDO_MostWanted(k, v)
+			end
+		end
+	end
+end
+net.Receive("PEDO_PlayerDied", PEDO_DrawWanted)
 
 local function PEDO_PlayerHUD()
 	local lp = LocalPlayer()
