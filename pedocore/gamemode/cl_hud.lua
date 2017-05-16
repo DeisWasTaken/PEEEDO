@@ -178,25 +178,6 @@ local function PEDO_RemoveMostWanted(id)
 	if DPanel[id] then DPanel[id]:Remove() end
 end
 
-concommand.Add("DeleteAvatars", function(ply) --debug
-	PEDO_RemoveMostWanted(0)
-	PEDO_RemoveMostWanted(1)
-	PEDO_RemoveMostWanted(2)
-	PEDO_RemoveMostWanted(4)
-	PEDO_RemoveMostWanted(5)
-	PEDO_RemoveMostWanted(6)
-end)
-
-concommand.Add("Avatars", function(ply) --debug
-	PEDO_MostWanted(0, ply)
-	PEDO_MostWanted(1, ply)
-	PEDO_MostWanted(2, ply)
-	PEDO_MostWanted(4, ply)
-	PEDO_MostWanted(5, ply)
-	PEDO_MostWanted(6, ply)
-end)
-
-
 local function PEDO_DrawWanted(len, ply)
 	for k,v in pairs(team.GetPlayers(TEAM_VICTIM)) do
 		if v:Alive() then
@@ -212,7 +193,7 @@ local function PEDO_DrawWanted(len, ply)
 		end
 	end
 end
-net.Receive("PEDO_PlayerDied", PEDO_DrawWanted)
+--net.Receive("PEDO_PlayerDied", PEDO_DrawWanted)
 
 local function PEDO_PlayerHUD()
 	local lp = LocalPlayer()

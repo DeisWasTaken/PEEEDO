@@ -11,6 +11,8 @@ PEDO.PrepareTime = 30
 
 PEDO.SpawnTime = 15
 
+PEDO.NotificationTime = 7
+
 PEDO.CatchRadius = 40
 
 PEDO.PedoWalkSpeed = 250

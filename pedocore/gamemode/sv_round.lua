@@ -30,10 +30,7 @@ local function PEDO_RoundStart()
     v:StripWeapons()
   end
   PEDO_SetRandomPedo()
-
-  if !IN_PREP then
-    PEDO_RoundCount()
-  end
+  PEDO_RoundCount()
   PEDO_PostRoundCalled = false
   hook.Call("PEDO_RoundStart")
   BroadcastLua( [[hook.Call( "PEDO_RoundStart" )]] )
@@ -64,6 +61,7 @@ end
 
 local function PEDO_PrepareTime()
   IN_PREP = true
+  ROUNDTIME = PEDO.PrepareTime
   PEDO_RoundStart()
   timer.Simple(PEDO.PrepareTime, function()
     PEDO_PostRound("3")
@@ -92,6 +90,10 @@ local function PEDO_DeathThink(ply)
   end)
 
   if ply:Team() == TEAM_SPEC then return false end
-  return false
+  if IN_PREP then
+    return true
+  else
+    return false
+  end
 end
 hook.Add("PlayerDeathThink", "PEDO_DeathThink", PEDO_DeathThink )

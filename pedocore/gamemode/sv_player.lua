@@ -1,6 +1,19 @@
 
 util.AddNetworkString( "PEDO_SendDeadPlayer" )
 util.AddNetworkString( "PEDO_PlayerDied" )
+util.AddNetworkString( "PEDO_Notification" )
+
+function PEDO_Notification(text, ply)
+	if ply == "all" then
+		net.Start( "PEDO_Notification" )
+		net.WriteString(text)
+		net.Broadcast()
+	else
+		net.Start( "PEDO_Notification" )
+		net.WriteString(text)
+		net.Send(ply)
+	end
+end
 
 local meta = FindMetaTable("Player")
 function meta:GivePedo()
@@ -38,6 +51,23 @@ local function debug_toggleteam(ply)
 end
 concommand.Add("tt", debug_toggleteam)
 
+local function PEDO_ChangeTeam(ply, cmd, args)
+  if !IsValid(ply) then return end
+  if !args[1] then return end
+  local team = tonumber(args[1])
+
+  if team == TEAM_VICTIM then
+    PEDO_Notification("Du hast das Spiel betreten", ply)
+    ply:SetTeam(TEAM_VICTIM)
+    ply:Kill()
+  elseif team == TEAM_SPEC then
+    PEDO_Notification("Du bist jetzt Spectator", ply)
+    ply:SetTeam(TEAM_SPEC)
+    ply:Kill()
+  end
+end
+concommand.Add("PEDO_Team", PEDO_ChangeTeam)
+
 local function PEDO_RestoreStamina(ply)
   timer.Create("PEDO_RestoreStamina", PEDO.StaminaRestoreTime, 0, function()
     if ply:GetStamina() >= 100 then
@@ -51,8 +81,8 @@ end
 local function PEDO_Stamina(ply, key)
   if key == IN_SPEED then
     if ply:GetStamina() > PEDO.StaminaDeadPoint then
+			timer.Destroy("PEDO_DelayRestoreStamina")
       timer.Create("PEDO_StaminaDrain",PEDO.StaminaDrain,0, function()
-          timer.Destroy("PEDO_DelayRestoreStamina")
           ply:SetNWInt("PEDO_Stamina", ply:GetNWInt("PEDO_Stamina") - 1 )
       end)
     end
