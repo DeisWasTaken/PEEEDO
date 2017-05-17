@@ -12,13 +12,15 @@ end
 
 local function PEDO_InitPedos(ply)
   ply:SetTeam(TEAM_PEDO)
+  ply:ChatPrint("DU BIST PEDOOO")
 end
 
 local function PEDO_SetRandomPedo()
   local plyrz = #team.GetPlayers(TEAM_VICTIM)
   plyrz = math.floor(plyrz / PEDO.PedoSpawnRate)
-
-  for i=1,plyrz do
+  if #team.GetPlayers(TEAM_VICTIM) == 0 then return end
+  if plyrz > 1 then plyrz = 1 end
+  for i=0,plyrz do
     PEDO_InitPedos(table.Random(team.GetPlayers(TEAM_VICTIM)))
   end
 end

@@ -1,5 +1,4 @@
 
-
 local blur = Material("pp/blurscreen")
 local function PEDO_DrawBlur(panel, pnlty)
 	local x, y = panel:LocalToScreen(0, 0)
@@ -14,7 +13,6 @@ local function PEDO_DrawBlur(panel, pnlty)
 		surface.DrawTexturedRect(-x, -y, ScrW(), ScrH())
 	end
 end
-
 
 local function PEDO_F1Panel(ply)
 	local BG = vgui.Create( "DFrame" )

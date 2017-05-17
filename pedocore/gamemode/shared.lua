@@ -4,6 +4,7 @@ GM.Email = "N/A"
 GM.Website = "N/A"
 
 PEDO = {}
+PEDO.Scoreboard = {}
 
 PEDO.RoundTime = 300
 PEDO.PreRoundTime = 5
@@ -28,7 +29,7 @@ PEDO.StaminaDeadPoint = 10 -- weniger als 10 punkte dann geht nix mehr
 
 PEDO.VIC = {}
 PEDO.VIC.Color = Color(255,0,0,255)
-PEDO.VIC.Name = "Kind"
+PEDO.VIC.Name = "Kinder"
 PEDO.VIC.Models = { // Just take 4 Models or Break the Gamemode
   ["RIOT"] = "models/player/riot.mdl",
 	["GASMASK"] = "models/player/gasmask.mdl",

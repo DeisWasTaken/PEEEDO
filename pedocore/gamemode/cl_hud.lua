@@ -8,42 +8,6 @@ local PEDO_WantedPersons = 0
 local Avatar = {}
 local DPanel = {}
 
-surface.CreateFont( "PEDOFont120", {
-	font = "Candy Shop", -- Use the font-name which is shown to you by your operating system Font Viewer, not the file name
-	size = 120,
-	weight = 5000,
-} )
-
-surface.CreateFont( "PEDOFont30", {
-	font = "Candy Shop Black", -- Use the font-name which is shown to you by your operating system Font Viewer, not the file name
-	size = 30,
-	weight = 5000,
-} )
-
-surface.CreateFont( "Wanted1080", {
-	font = "Western Dead", -- Use the font-name which is shown to you by your operating system Font Viewer, not the file name
-	size = 40,
-	weight = 500,
-} )
-
-surface.CreateFont( "WantedSmall1080", {
-	font = "Western Dead", -- Use the font-name which is shown to you by your operating system Font Viewer, not the file name
-	size = 30,
-	weight = 500,
-} )
-
-surface.CreateFont( "Wanted720", {
-	font = "Western Dead", -- Use the font-name which is shown to you by your operating system Font Viewer, not the file name
-	size = 30,
-	weight = 500,
-} )
-
-surface.CreateFont( "WantedSmall720", {
-	font = "Western Dead", -- Use the font-name which is shown to you by your operating system Font Viewer, not the file name
-	size = 20,
-	weight = 500,
-} )
-
 local function PEDO_StartRoundTimer()
 	ROUNDTIME = PEDO.RoundTime
   timer.Create("PEDO_RoundCountCL", 1, 0, function()
