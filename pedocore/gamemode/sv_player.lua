@@ -34,22 +34,11 @@ function meta:Loadout()
 end
 
 local function PEDO_SetTeamOnSpawn(ply)
-  ply:SetTeam(TEAM_VICTIM)
+  ply:SetTeam(TEAM_SPEC)
   ply:SetModel("models/player/riot.mdl")
   ply:SetNWInt("PEDO_Stamina", 100)
 end
 hook.Add("PlayerInitialSpawn", "PEDO_SetTeamOnSpawn", PEDO_SetTeamOnSpawn)
-
-local function debug_toggleteam(ply)
-  if ply:IsPedo() then
-    ply:RemovePedo()
-    ply:ChatPrint("nopedo")
-  else
-    ply:GivePedo()
-    ply:ChatPrint("pedo")
-  end
-end
-concommand.Add("tt", debug_toggleteam)
 
 local function PEDO_ChangeTeam(ply, cmd, args)
   if !IsValid(ply) then return end
@@ -104,21 +93,23 @@ hook.Add( "KeyRelease", "PEDO_RevokeDrain", PEDO_RevokeDrain )
 local function PEDO_NearVictims()
   local damageinfo = DamageInfo()  //Victim can't hold the pressure and commits suicide.
   for k,v in pairs(team.GetPlayers(TEAM_PEDO)) do
-      if v:IsPlayer() then
-        v:SetModel("models/player/pbear/pbear.mdl")
-      end
-    for _,ply in pairs(ents.FindInSphere(v:GetPos(),PEDO.CatchRadius)) do
-      if ply:IsPlayer() then
-        if !ply:IsPedo() then
-          if ply:Alive() then
-            damageinfo:SetAttacker( v )
-            damageinfo:SetDamage( ply:Health() * ply:GetMaxHealth() )
-            damageinfo:SetDamageType( DMG_DISSOLVE )
-            ply:TakeDamageInfo( damageinfo )
-          end
-        end
-      end
-    end
+		if v:Alive() then
+	      if v:IsPlayer() then
+	        v:SetModel("models/player/pbear/pbear.mdl")
+	      end
+	    for _,ply in pairs(ents.FindInSphere(v:GetPos(),PEDO.CatchRadius)) do
+	      if ply:IsPlayer() then
+	        if !ply:IsPedo() then
+	          if ply:Alive() then
+	            damageinfo:SetAttacker( v )
+	            damageinfo:SetDamage( ply:Health() * ply:GetMaxHealth() )
+	            damageinfo:SetDamageType( DMG_DISSOLVE )
+	            ply:TakeDamageInfo( damageinfo )
+	          end
+	        end
+	      end
+	    end
+		end
   end
 
   for k,v in pairs(player.GetAll()) do

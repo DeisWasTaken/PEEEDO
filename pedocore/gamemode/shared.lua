@@ -6,6 +6,14 @@ GM.Website = "N/A"
 PEDO = {}
 PEDO.Scoreboard = {}
 
+PEDO.Spawntext = {
+  "Van wird getankt",
+  "Süssichkeiten werden abgepackt",
+  "Fell wird gereinigt",
+  "Lächeln wird aufgesetzt",
+  "Luftdruck wird geprueft"
+}
+
 PEDO.RoundTime = 300
 PEDO.PreRoundTime = 5
 PEDO.PrepareTime = 30

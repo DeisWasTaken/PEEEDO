@@ -1,20 +1,29 @@
 
-local ROUNDTIME = PEDO.RoundTime
-local PRETIME = PEDO.PrepareTime
+ROUNDTIME = PEDO.RoundTime
+PRETIME = PEDO.PrepareTime
+
 local Winner = ""
 local PedoScreen = false
 local PEDO_WantedPersons = 0
+local PEDO_DrawPedoOnScreen
 
 local Avatar = {}
 local DPanel = {}
+local avatarmodel
+local AvatarPanel = false
 
 local function PEDO_StartRoundTimer()
-	ROUNDTIME = PEDO.RoundTime
   timer.Create("PEDO_RoundCountCL", 1, 0, function()
     ROUNDTIME = ROUNDTIME - 1
   end)
 end
 hook.Add("PEDO_RoundStart", "PEDO_StartRoundTimer", PEDO_StartRoundTimer)
+
+local function PEDO_GetRoundTime(len, ply)
+	ROUNDTIME = tonumber(net.ReadString())
+	PEDO_StartRoundTimer()
+end
+net.Receive("PEDO_SendRoundTime", PEDO_GetRoundTime)
 
 local function PEDO_EndRoundEvents(WinInt)
   if WinInt == 1 then
@@ -55,33 +64,6 @@ local function drawBlur( x, y, w, h )
 	end
 end
 
-local w, h = 300, 150
---hook.Add("Think", "DrawPlayerModel", function()
-concommand.Add("av", function()
-	local avatarsize = 175
-	local lp = LocalPlayer()
-	local model = lp:GetModel()
-	local campos = Vector(20, 0, 65)
-	local lookpos = Vector(0, 0, 66.5)
-	if lp:Team() == TEAM_PEDO then
-		model = "models/player/pbear/pbear.mdl"
-		campos = Vector(40, 0, 100)
-	end
-	if iconmodel then iconmodel:Remove() end
-	iconmodel = vgui.Create("DModelPanel")
-	iconmodel:SetModel( model )
-
-	iconmodel:SetPos(0, ScrH()-255)
-	iconmodel:SetAnimated(true)
-	iconmodel:SetSize(avatarsize,avatarsize)
-	iconmodel:SetCamPos( campos)
-	iconmodel:SetLookAt( lookpos )
-
-	local move = iconmodel:GetEntity():LookupSequence( "taunt_robot" )
-	iconmodel:GetEntity():SetSequence( move )
-end)
-
-local blur = Material("pp/blurscreen")
 local function PEDO_DrawBlur(panel)
 	local x, y = panel:LocalToScreen(0, 0)
 
@@ -96,7 +78,6 @@ local function PEDO_DrawBlur(panel)
 		surface.DrawTexturedRect(-x, -y, ScrW(), ScrH())
 	end
 end
-
 
 local function PEDO_DrawAvatars(id, ply)
 	if id == 3 then id = 4 end
@@ -157,8 +138,8 @@ local function PEDO_DrawWanted(len, ply)
 		end
 	end
 end
---net.Receive("PEDO_PlayerDied", PEDO_DrawWanted)
 
+local w,h = 300, 150
 local function PEDO_PlayerHUD()
 	local lp = LocalPlayer()
   if ROUNDTIME > 0 then
@@ -168,8 +149,10 @@ local function PEDO_PlayerHUD()
   end
 
 	-- Avatar
-	drawBlur(0, ScrH()-255, 175, 175)
-	draw.RoundedBox(0, 0, ScrH()-255, 175, 175, Color(0,0,0,80))
+	if AvatarPanel then
+		drawBlur(0, ScrH()-255, 175, 175)
+		draw.RoundedBox(0, 0, ScrH()-255, 175, 175, Color(0,0,0,80))
+	end
 
 	--Healthbar
 	local hp = lp:Health()
@@ -198,9 +181,34 @@ local function PEDO_EventHUD()
   draw.SimpleTextOutlined(Winner, "PEDOFont120", ScrW() / 2, 120, Color( 255, 255, 255, 255 ), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER, 1,Color(0,0,0,25))
 end
 
+local function PEDO_DrawPEDO()
+	local avatarsize = ScrH() * 0.7
+	local lp = LocalPlayer()
+	if !lp:IsPedo() then return end
+
+	if PEDO_DrawPedoOnScreen then PEDO_DrawPedoOnScreen:Remove() end
+	PEDO_DrawPedoOnScreen = vgui.Create("DModelPanel")
+	PEDO_DrawPedoOnScreen:SetModel( "models/player/pbear/pbear.mdl" )
+	PEDO_DrawPedoOnScreen:SetSize(avatarsize,avatarsize)
+	PEDO_DrawPedoOnScreen:SetPos(ScrW() / 2 - PEDO_DrawPedoOnScreen:GetWide() / 2, ScrH() * 0.2)
+	PEDO_DrawPedoOnScreen:SetAnimated(true)
+
+	PEDO_DrawPedoOnScreen:SetCamPos( Vector(20, 70, 60))
+	PEDO_DrawPedoOnScreen:SetLookAt( Vector(0, 0, 50) )
+
+	local move = PEDO_DrawPedoOnScreen:GetEntity():LookupSequence( "taunt_robot" )
+	PEDO_DrawPedoOnScreen:GetEntity():SetSequence( move )
+	timer.Simple(7, function()
+		move = PEDO_DrawPedoOnScreen:GetEntity():LookupSequence( "taunt_dance" )
+		PEDO_DrawPedoOnScreen:GetEntity():SetSequence( move )
+	end)
+end
+
+local PEDO_Spawntext = table.Random(PEDO.Spawntext)
 local function PEDO_DrawPedoSpawnScreen()
  local scrw, scrh = ScrW(), ScrH()
  draw.RoundedBox(0, 0, 0, scrw ,scrh ,Color(0,0,0))
+ draw.SimpleText(PEDO_Spawntext,"PEDOFont120",ScrW() / 2, 60, Color(255,255,255), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
 
 end
 
@@ -216,11 +224,69 @@ local function PEDO_DrawHUD()
 end
 hook.Add("HUDPaint", "PEDO_DrawHUD", PEDO_DrawHUD)
 
+local function PEDO_RandomAnim(panel)
+	local moves = {
+		"taunt_cheer",
+		"taunt_dance",
+		"taunt_laugh",
+		"taunt_muscle",
+		"taunt_robot",
+		"taunt_persistence"
+	}
+	if !panel then return end
+	local move = panel:GetEntity():LookupSequence( "taunt_robot" )
+	panel:GetEntity():SetSequence( table.Random(moves) )
+
+end
+
+local function PEDO_ShowAvatar()
+	local avatarsize = 175
+	local lp = LocalPlayer()
+	if !lp then return end
+	local model = lp:GetModel()
+	local campos = Vector(20, 0, 65)
+	local lookpos = Vector(0, 0, 66.5)
+	AvatarPanel = true
+	if lp:IsPedo() then
+		model = "models/player/pbear/pbear.mdl"
+		campos = Vector(40, 0, 100)
+	end
+	if avatarmodel then
+		avatarmodel:Remove()
+		timer.Destroy("PEDO_AvatarMoves")
+	end
+
+	avatarmodel = vgui.Create("DModelPanel")
+	avatarmodel:SetModel( model )
+	avatarmodel:SetPos(0, ScrH()-255)
+	avatarmodel:SetAnimated(true)
+	avatarmodel:SetSize(avatarsize,avatarsize)
+	avatarmodel:SetCamPos( campos)
+	avatarmodel:SetLookAt( lookpos )
+
+	local move = avatarmodel:GetEntity():LookupSequence( "taunt_robot" )
+	avatarmodel:GetEntity():SetSequence( move )
+
+	timer.Create("PEDO_AvatarMoves", 15, 0, function() PEDO_RandomAnim(avatarmodel) end)
+end
+
 local function PEDO_RoundStartScreen()
 	PedoScreen = true
-	LocalPlayer():ChatPrint(tostring(PedoScreen))
+	timer.Simple(1, function()
+		PEDO_DrawPEDO()
+	end)
 	timer.Simple(PEDO.SpawnTime, function()
 		PedoScreen = false
+		if LocalPlayer():IsPedo() then
+			PEDO_ShowAvatar()
+			PEDO_DrawPedoOnScreen:Remove()
+		end
+	end)
+	PEDO_Spawntext = table.Random(PEDO.Spawntext)
+	timer.Simple(1, function()
+		if !LocalPlayer():IsPedo() then
+			PEDO_ShowAvatar()
+		end
 	end)
 end
 hook.Add("PEDO_RoundStart", "PEDO_RoundStartScreen", PEDO_RoundStartScreen )

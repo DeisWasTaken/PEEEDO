@@ -5,6 +5,12 @@ include( "cl_panel.lua" )
 include( "sh_player.lua" )
 include( "cl_notification.lua" )
 
+surface.CreateFont( "CoreFont24", {
+	font = "Open Sans", -- Use the font-name which is shown to you by your operating system Font Viewer, not the file name
+	size = 24,
+	weight = 500,
+} )
+
 surface.CreateFont( "CoreFont26", {
 	font = "Open Sans", -- Use the font-name which is shown to you by your operating system Font Viewer, not the file name
 	size = 26,

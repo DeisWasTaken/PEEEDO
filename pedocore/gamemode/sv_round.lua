@@ -1,3 +1,4 @@
+util.AddNetworkString( "PEDO_SendRoundTime" )
 
 ROUNDS = 0
 ROUNDTIME = PEDO.RoundTime
@@ -11,9 +12,18 @@ local function PEDO_RoundCount()
 end
 
 local function PEDO_InitPedos(ply)
-  ply:SetTeam(TEAM_PEDO)
-  ply:ChatPrint("DU BIST PEDOOO")
+  if IsValid(ply) then
+    ply:SetTeam(TEAM_PEDO)
+    ply:KillSilent()
+  end
 end
+
+local function PEDO_SendRoundTimeOnSpawn(ply)
+  net.Start("PEDO_SendRoundTime")
+  net.WriteString(tostring(ROUNDTIME))
+  net.Send(ply)
+end
+hook.Add("PlayerInitialSpawn", "PEDO_SendRoundTimeOnSpawn", PEDO_SendRoundTimeOnSpawn)
 
 local function PEDO_SetRandomPedo()
   local plyrz = #team.GetPlayers(TEAM_VICTIM)
@@ -26,7 +36,12 @@ local function PEDO_SetRandomPedo()
 end
 
 local function PEDO_RoundStart()
-  ROUNDTIME = PEDO.RoundTime
+  if !IN_PREP then
+    ROUNDTIME = PEDO.RoundTime
+    net.Start("PEDO_SendRoundTime")
+    net.WriteString(tostring(ROUNDTIME))
+    net.Broadcast()
+  end
   for k,v in pairs(player.GetAll()) do
     v:SetTeam(TEAM_VICTIM)
     v:StripWeapons()

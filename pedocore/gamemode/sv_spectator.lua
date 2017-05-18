@@ -9,15 +9,13 @@ local function PEDO_Spectator_Death( pl, wep, killer )
 		pl:SpectateEntity( killer )
 	end
 end
---hook.Add("PlayerDeath", "PEDO_Spectator_Death", PEDO_Spectator_Death)
+hook.Add("PlayerDeath", "PEDO_Spectator_Death", PEDO_Spectator_Death)
 
 function PEDO_Spectator_Deaththink( pl )
 	local players = {}
 	table.Add( players, team.GetPlayers( TEAM_VICTIM ) )
 	table.Add( players, team.GetPlayers( TEAM_PEDO ) )
-
-	if IN_PREPARE then return false end
-
+	if !pl.SpecType then return end
 	local alive = 0
 
 	for k,v in pairs(players) do
@@ -50,4 +48,4 @@ function PEDO_Spectator_Deaththink( pl )
 	end
 	return false; -- prevent spawning
 end
---hook.Add("PlayerDeathThink", "PEDO_Spectator_Deaththink", PEDO_Spectator_Deaththink)
+hook.Add("PlayerDeathThink", "PEDO_Spectator_Deaththink", PEDO_Spectator_Deaththink)

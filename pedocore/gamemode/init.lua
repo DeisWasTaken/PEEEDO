@@ -1,3 +1,4 @@
+
 AddCSLuaFile( "cl_init.lua" )
 AddCSLuaFile( "shared.lua" )
 AddCSLuaFile( "cl_hud.lua" )
@@ -11,5 +12,4 @@ include( "sv_round.lua" )
 include( "sh_player.lua" )
 include( "sv_spectator.lua" )
 
-resource.AddFile("resources/fonts/Candy_Pop.ttf")
 resource.AddWorkshop("111603898") -- Pedo Bear Playermodel
