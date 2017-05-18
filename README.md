@@ -11,10 +11,10 @@ PEEEDO
 #### <i class="icon-file"></i> Developer documentation
 -------------
 <i class="icon-th-list">Serverside hooks:
->
+> 
 
 <i class="icon-user">Clientside hooks:
->
+> 
 
 <i class="icon-user"><i class="icon-th-list">Shared hooks:
 
@@ -25,7 +25,6 @@ PEEEDO
 
 ----------
 #### <i class="icon-pencil"></i> Configuration
-----------
 you can configure the gamemode at [*pedocore/gamemode/shared.lua*](https://github.com/habobababo/PEEEDO/blob/master/pedocore/gamemode/shared.lua)
 
 A short list of some configs here
@@ -45,3 +44,4 @@ PEDO.DelayRestoreStamina =` 4` *x seconds after release the key, the stamina sta
 PEDO.StaminaDeadPoint = `10` *if stamina is below x, you can't run anymore*<br>
 
 ----------
+
