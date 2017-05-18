@@ -25,6 +25,7 @@ PEEEDO
 
 ----------
 #### <i class="icon-pencil"></i> Configuration
+----------
 you can configure the gamemode at [*pedocore/gamemode/shared.lua*](https://github.com/habobababo/PEEEDO/blob/master/pedocore/gamemode/shared.lua)
 
 A short list of some configs here
