@@ -11,15 +11,14 @@ PEEEDO
 #### <i class="icon-file"></i> Developer documentation
 -------------
 <i class="icon-th-list">Serverside hooks:
->
+> 
 
 <i class="icon-user">Clientside hooks:
->
+> 
 
 <i class="icon-user"><i class="icon-th-list">Shared hooks:
 
->
-**PEDO_Initialize** Calls when the gamemode is initialized<br>
+>**PEDO_Initialize** Calls when the gamemode is initialized<br>
 **PEDO_RoundEnd** Calls at the end of the round. **Returns Winner**<br>
 **PEDO_RoundStart** Calls the beginning of the round
 
@@ -45,4 +44,3 @@ PEDO.DelayRestoreStamina =` 4` -- *x seconds after release the key, the stamina 
 PEDO.StaminaDeadPoint = `10` -- *if stamina is below x, you can't run anymore*<br>
 
 ----------
-
