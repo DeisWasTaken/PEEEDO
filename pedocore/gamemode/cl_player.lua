@@ -37,3 +37,11 @@ local function PEDO_ToggleThirdPerson(ply)
   end
 end
 concommand.Add("PEDO_Thirdperson", PEDO_ToggleThirdPerson)
+
+hook.Add("CreateMove",'F8_Thirsperson', function()
+	local ply = LocalPlayer()
+	if input.WasKeyPressed(KEY_F8) then
+		ply:ConCommand("PEDO_Thirdperson")
+	end
+end)
+
