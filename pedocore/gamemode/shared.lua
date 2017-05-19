@@ -3,9 +3,10 @@ GM.Author = "Habobababo"
 GM.Email = "mail@core-community.de"
 GM.Website = "core-community.de"
 --[[
-
+        |||||||||||||||||||||||||||||||||
         ||  JUST EDIT THE MARKED LINES ||
-
+        ||       DO NOT EDIT THIS      ||
+        |||||||||||||||||||||||||||||||||
 ]]--
 
 PEDO = {}
@@ -16,17 +17,26 @@ PEDO.SPEC = {}
 PEDO.VIC = {}
 
 --[[
-
+        |||||||||||||||||||||
         || EDIT BELOW HERE ||
-
+        |||||||||||||||||||||
 ]]--
 
-PEDO.Spawntext = { -- Text in the spawntime of the Pedobear
+PEDO.Spawntext = { -- text in the spawntime of the Pedobear
   "Van wird getankt",
   "Süssichkeiten werden abgepackt",
   "Fell wird gereinigt",
   "Lächeln wird aufgesetzt",
   "Luftdruck wird geprueft"
+}
+
+PEDO.HUDAvatarAnimations = { -- animations of the avatar @ hud
+  "taunt_cheer",
+  "taunt_dance",
+  "taunt_laugh",
+  "taunt_muscle",
+  "taunt_robot",
+  "taunt_persistence"
 }
 
 PEDO.RoundTime = 300 -- x minutes roundtime is legit
@@ -83,9 +93,9 @@ PEDO.SPEC.Name = "Zuschauer" -- spectator name, -- NOT IN USE --
 PEDO.SPEC.Color = Color(0,70,70,255) -- ...
 
 --[[
-
+        |||||||||||||||||||||||
         || STOP EDITING HERE ||
-
+        |||||||||||||||||||||||
 ]]--
 
 

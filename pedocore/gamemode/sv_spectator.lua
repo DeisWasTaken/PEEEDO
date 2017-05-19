@@ -34,6 +34,7 @@ function PEDO_Spectator_Deaththink( pl )
 		if !pl.SpecID then pl.SpecID = 1 end
 		if pl.SpecID > #players then pl.SpecID = 1 end
 		pl.SpecID = pl.SpecID + 1
+		if !players[ pl.SpecID ] then return end
 		if players[ pl.SpecID ]:Alive() then
 			pl:SpectateEntity( players[ pl.SpecID ] )
 		end
@@ -42,6 +43,7 @@ function PEDO_Spectator_Deaththink( pl )
 		if !pl.SpedID then pl.SpedID = 1 end
 		pl.SpecID = pl.SpecID - 1
 		if pl.SpecID <= 0 then pl.SpecID = #players end
+		if !players[ pl.SpecID ] then return end
 		if players[ pl.SpecID ]:Alive() then
 			pl:SpectateEntity( players[ pl.SpecID ] )
 		end

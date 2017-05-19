@@ -48,37 +48,6 @@ local function PEDO_EndRoundEvents(WinInt)
 end
 hook.Add("PEDO_RoundEnd", "PEDO_EndRoundEvents", PEDO_EndRoundEvents)
 
-local blur = Material( "pp/blurscreen" )
-local function drawBlur( x, y, w, h )
-	surface.SetDrawColor( 255, 255, 255, 255 )
-	surface.SetMaterial( blur )
-
-	for i = 1, 6 do
-		blur:SetFloat( "$blur", ( i / 6 ) * 6 )
-		blur:Recompute()
-
-		render.UpdateScreenEffectTexture()
-		render.SetScissorRect( x, y, x + w, y + h, true )
-			surface.DrawTexturedRect( 0, 0, ScrW(), ScrH() )
-		render.SetScissorRect( 0, 0, 0, 0, false )
-	end
-end
-
-local function PEDO_DrawBlur(panel)
-	local x, y = panel:LocalToScreen(0, 0)
-
-	surface.SetDrawColor(255, 255, 255, 200)
-	surface.SetMaterial(blur)
-
-	for i = 1, 3 do
-		blur:SetFloat("$blur", (i / 5) * 20)
-		blur:Recompute()
-
-		render.UpdateScreenEffectTexture()
-		surface.DrawTexturedRect(-x, -y, ScrW(), ScrH())
-	end
-end
-
 local function PEDO_DrawAvatars(id, ply)
 	if id == 3 then id = 4 end
 	Avatar[id] = vgui.Create( "AvatarImage" )
@@ -143,21 +112,22 @@ local w,h = 300, 150
 local function PEDO_PlayerHUD()
 	local lp = LocalPlayer()
   if ROUNDTIME > 0 then
-		drawBlur(ScrW() / 2 - 45, -10, 90, 70)
+		PEDO_DrawBlur(ScrW() / 2 - 45, -10, 90, 70)
 		draw.RoundedBox(8, ScrW() / 2 - 45, -10, 90, 70, Color(0,0,0,80))
     draw.SimpleTextOutlined(string.ToMinutesSeconds(ROUNDTIME), "PEDOFont30", ScrW() / 2, 30, Color( 255, 255, 255, 255 ), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER, 1, Color(0, 0, 0, 100))
   end
 
 	-- Avatar
 	if AvatarPanel then
-		drawBlur(0, ScrH()-255, 175, 175)
+		PEDO_DrawBlur(0, ScrH()-255, 175, 175)
 		draw.RoundedBox(0, 0, ScrH()-255, 175, 175, Color(0,0,0,80))
 	end
 
 	--Healthbar
 	local hp = lp:Health()
 	hp = hp * 3
-	drawBlur(0, ScrH() - h + 70, w, 30)
+  PEDO_DrawBlur(0, ScrH() - h + 102, w, 30) -- Staminablur to avoid lighs from HP
+	PEDO_DrawBlur(0, ScrH() - h + 70, w, 30)
 	draw.RoundedBox(0, 0, ScrH() - h + 70, w, 30, Color(30,30,0,150))
 	draw.RoundedBox(0, 0, ScrH() - h + 70, hp, 30, Color(255,30,0,150))
 
@@ -165,7 +135,6 @@ local function PEDO_PlayerHUD()
 	local stamina = lp:GetStamina() or 0
 	stamina = math.Clamp(stamina,0,100)
 
-	drawBlur(0, ScrH() - h + 102, w, 30)
 	draw.RoundedBox(0, 0, ScrH() - h + 102, w, 30, Color(30,30,0,150))
 	draw.RoundedBox(0, 0, ScrH() - h + 102, stamina * 3, 30, Color(155,130,0,150))
 
@@ -192,13 +161,13 @@ local function PEDO_DrawPEDO()
 	PEDO_DrawPedoOnScreen:SetSize(avatarsize,avatarsize)
 	PEDO_DrawPedoOnScreen:SetPos(ScrW() / 2 - PEDO_DrawPedoOnScreen:GetWide() / 2, ScrH() * 0.2)
 	PEDO_DrawPedoOnScreen:SetAnimated(true)
-
 	PEDO_DrawPedoOnScreen:SetCamPos( Vector(20, 70, 60))
 	PEDO_DrawPedoOnScreen:SetLookAt( Vector(0, 0, 50) )
-
-	local move = PEDO_DrawPedoOnScreen:GetEntity():LookupSequence( "taunt_robot" )
-	PEDO_DrawPedoOnScreen:GetEntity():SetSequence( move )
+  local PedoEntity = PEDO_DrawPedoOnScreen:GetEntity()
+	local move = PedoEntity:LookupSequence( "taunt_robot" )
+	PedoEntity:SetSequence( move )
 	timer.Simple(7, function()
+    if !IsValid(PedoEntity) then return end
 		move = PEDO_DrawPedoOnScreen:GetEntity():LookupSequence( "taunt_dance" )
 		PEDO_DrawPedoOnScreen:GetEntity():SetSequence( move )
 	end)
@@ -224,34 +193,19 @@ local function PEDO_DrawHUD()
 end
 hook.Add("HUDPaint", "PEDO_DrawHUD", PEDO_DrawHUD)
 
-local function PEDO_RandomAnim(panel)
-	local moves = {
-		"taunt_cheer",
-		"taunt_dance",
-		"taunt_laugh",
-		"taunt_muscle",
-		"taunt_robot",
-		"taunt_persistence"
-	}
-	if !panel then return end
-	local move = panel:GetEntity():LookupSequence( "taunt_robot" )
-	panel:GetEntity():SetSequence( table.Random(moves) )
-
-end
-
 local function PEDO_ShowAvatar()
-	local avatarsize = 175
 	local lp = LocalPlayer()
-	if !lp then return end
+	if !IsValid(lp) then return end
 	local model = lp:GetModel()
 	local campos = Vector(20, 0, 65)
-	local lookpos = Vector(0, 0, 66.5)
+
 	AvatarPanel = true
+
 	if lp:IsPedo() then
 		model = "models/player/pbear/pbear.mdl"
 		campos = Vector(40, 0, 100)
 	end
-	if avatarmodel then
+	if IsValid(avatarmodel) then
 		avatarmodel:Remove()
 		timer.Destroy("PEDO_AvatarMoves")
 	end
@@ -260,14 +214,13 @@ local function PEDO_ShowAvatar()
 	avatarmodel:SetModel( model )
 	avatarmodel:SetPos(0, ScrH()-255)
 	avatarmodel:SetAnimated(true)
-	avatarmodel:SetSize(avatarsize,avatarsize)
+	avatarmodel:SetSize(175,175)
 	avatarmodel:SetCamPos( campos)
-	avatarmodel:SetLookAt( lookpos )
+	avatarmodel:SetLookAt( Vector(0, 0, 66.5) )
 
-	local move = avatarmodel:GetEntity():LookupSequence( "taunt_robot" )
+	local move = avatarmodel:GetEntity():LookupSequence( table.Random(PEDO.HUDAvatarAnimations) )
 	avatarmodel:GetEntity():SetSequence( move )
 
-	timer.Create("PEDO_AvatarMoves", 15, 0, function() PEDO_RandomAnim(avatarmodel) end)
 end
 
 local function PEDO_RoundStartScreen()

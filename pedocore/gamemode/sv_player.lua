@@ -60,7 +60,6 @@ concommand.Add("PEDO_Team", PEDO_ChangeTeam)
 local function PEDO_RestoreStamina(ply)
   timer.Create("PEDO_RestoreStamina", PEDO.StaminaRestoreTime, 0, function()
     if ply:GetStamina() >= 100 then
-      timer.Destroy("PEDO_RestoreStamina")
       ply:SetNWInt("PEDO_Stamina", 100)
     end
     ply:SetNWInt("PEDO_Stamina", ply:GetNWInt("PEDO_Stamina") + 1 )
@@ -82,10 +81,13 @@ hook.Add( "KeyPress", "PEDO_Stamina", PEDO_Stamina )
 local function PEDO_RevokeDrain(ply, key)
   if key == IN_SPEED then
     timer.Destroy("PEDO_StaminaDrain")
-    if timer.Exists("PEDO_DelayRestoreStamina") then return end
-    timer.Create("PEDO_DelayRestoreStamina", PEDO.DelayRestoreStamina, 1, function()
-        PEDO_RestoreStamina(ply)
-    end)
+		timer.Destroy("PEDO_DelayRestoreStamina")
+		timer.Destroy("PEDO_RestoreStamina")
+		timer.Simple(0.1, function()
+	    timer.Create("PEDO_DelayRestoreStamina", PEDO.DelayRestoreStamina, 1, function()
+	        PEDO_RestoreStamina(ply)
+	    end)
+		end)
   end
 end
 hook.Add( "KeyRelease", "PEDO_RevokeDrain", PEDO_RevokeDrain )
@@ -94,21 +96,23 @@ local function PEDO_NearVictims()
   local damageinfo = DamageInfo()  //Victim can't hold the pressure and commits suicide.
   for k,v in pairs(team.GetPlayers(TEAM_PEDO)) do
 		if v:Alive() then
-	      if v:IsPlayer() then
-	        v:SetModel("models/player/pbear/pbear.mdl")
-	      end
-	    for _,ply in pairs(ents.FindInSphere(v:GetPos(),PEDO.CatchRadius)) do
-	      if ply:IsPlayer() then
-	        if !ply:IsPedo() then
-	          if ply:Alive() then
-	            damageinfo:SetAttacker( v )
-	            damageinfo:SetDamage( ply:Health() * ply:GetMaxHealth() )
-	            damageinfo:SetDamageType( DMG_DISSOLVE )
-	            ply:TakeDamageInfo( damageinfo )
-	          end
-	        end
-	      end
-	    end
+			if !v.frozen then
+		      if v:IsPlayer() then
+		        v:SetModel("models/player/pbear/pbear.mdl")
+		      end
+		    for _,ply in pairs(ents.FindInSphere(v:GetPos(),PEDO.CatchRadius)) do
+		      if ply:IsPlayer() then
+		        if !ply:IsPedo() then
+		          if ply:Alive() then
+		            damageinfo:SetAttacker( v )
+		            damageinfo:SetDamage( ply:Health() * ply:GetMaxHealth() )
+		            damageinfo:SetDamageType( DMG_DISSOLVE )
+		            ply:TakeDamageInfo( damageinfo )
+		          end
+		        end
+		      end
+		    end
+			end
 		end
   end
 
@@ -139,3 +143,13 @@ local function PEDO_SendPlayerDeath(victim, inflictor, attacker)
   end
 end
 hook.Add("PlayerDeath", "PEDO_SendPlayerDeath", PEDO_SendPlayerDeath)
+
+local function PEDO_ChatCommands( ply, text, pub)
+	text = string.lower( text ) -- Make the chat message entirely lowercase
+	if ( text == "!thirdperson" ) or ( text == "!3p" ) then
+		ply:ConCommand("PEDO_Thirdperson")
+		return ""
+	end
+
+end
+hook.Add( "PlayerSay", "Killurself", PEDO_ChatCommands)

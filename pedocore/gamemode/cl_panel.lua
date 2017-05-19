@@ -1,6 +1,6 @@
 
 local blur = Material("pp/blurscreen")
-local function PEDO_DrawBlur(panel, pnlty)
+local function PEDO_DrawCustomBlur(panel, pnlty)
 	local x, y = panel:LocalToScreen(0, 0)
 	surface.SetDrawColor(255, 255, 255, 200)
 	surface.SetMaterial(blur)
@@ -24,7 +24,7 @@ local function PEDO_F1Panel(ply)
   BG:ShowCloseButton( false )
   BG:MakePopup()
   BG.Paint = function(self)
-    PEDO_DrawBlur(self, 25)
+    PEDO_DrawCustomBlur(self, 25)
     draw.RoundedBox(4,0,0,self:GetWide(),self:GetTall(),Color(0,0,0,80))
   end
 

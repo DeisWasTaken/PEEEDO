@@ -5,6 +5,8 @@ AddCSLuaFile( "cl_hud.lua" )
 AddCSLuaFile( "cl_panel.lua" )
 AddCSLuaFile( "sh_player.lua" )
 AddCSLuaFile( "cl_notification.lua" )
+AddCSLuaFile( "cl_player.lua" )
+AddCSLuaFile( "cl_scoreboard.lua" )
 
 include( "shared.lua" )
 include( "sv_player.lua" )

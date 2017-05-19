@@ -1,4 +1,6 @@
+util.AddNetworkString( "PEDO_PlayerInitialSpawn" )
 util.AddNetworkString( "PEDO_SendRoundTime" )
+
 
 ROUNDS = 0
 ROUNDTIME = PEDO.RoundTime
@@ -14,16 +16,18 @@ end
 local function PEDO_InitPedos(ply)
   if IsValid(ply) then
     ply:SetTeam(TEAM_PEDO)
-    ply:KillSilent()
+    ply:Freeze(true)
+    ply.frozen = true
   end
 end
 
-local function PEDO_SendRoundTimeOnSpawn(ply)
+local function PEDO_PlayerInitialSpawn(ply)
   net.Start("PEDO_SendRoundTime")
   net.WriteString(tostring(ROUNDTIME))
   net.Send(ply)
+  ply.frozen = false
 end
-hook.Add("PlayerInitialSpawn", "PEDO_SendRoundTimeOnSpawn", PEDO_SendRoundTimeOnSpawn)
+hook.Add("PlayerInitialSpawn", "PEDO_PlayerInitialSpawn", PEDO_PlayerInitialSpawn)
 
 local function PEDO_SetRandomPedo()
   local plyrz = #team.GetPlayers(TEAM_VICTIM)
@@ -61,6 +65,8 @@ local function PEDO_RoundStart()
     for k,v in pairs(team.GetPlayers(TEAM_PEDO)) do
       v:Loadout()
       v:Spawn()
+      v:Freeze(false)
+      v.frozen = false
     end
   end)
 end
@@ -89,7 +95,7 @@ hook.Add("PEDO_Initialize", "PEDO_PrepareTime", PEDO_PrepareTime )
 
 local function PEDO_DeathThink(ply)
   local VIC_ALIVE = 0
-
+  if #player.GetAll() == 1 then return end
   timer.Simple(0.2, function()
     for k,v in pairs(team.GetPlayers(TEAM_VICTIM)) do
       if v:Alive() then
